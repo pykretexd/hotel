@@ -64,7 +64,6 @@ def booking_menu():
         ])
     start_date = datetime.strptime(booking_answers['start'], '%Y/%m/%d')
     end_date = datetime.strptime(booking_answers['end'], '%Y/%m/%d')
-    print(start_date, end_date)
     delta = end_date - start_date
     price = int(booking_answers['amount']) * 100 * delta.days
 
@@ -75,11 +74,58 @@ def booking_menu():
         is_paid = 0
 
     with engine.connect() as conn:
-        conn.execute(f"INSERT INTO bookings (customer_id, room_id, number_of_people, start_date, end_date, price, is_paid) VALUES ({customer_id}, {booking_answers['id']}, {booking_answers['amount']}, '{booking_answers['start']}', '{booking_answers['end']}', {price}, {is_paid})")
-    print('Room successfully booked.')
+        conn.execute(f"INSERT INTO bookings (customer_id, room_id, number_of_people, start_date, end_date, price, is_paid) VALUES ({customer_id}, {booking_answers['id']}, {booking_answers['amount']}, '{start_date}', '{end_date}', {price}, {is_paid})")
+        result = conn.execute(f"SELECT * FROM bookings WHERE customer_id = {customer_id} AND room_id = {booking_answers['id']} AND start_date = '{start_date}' AND end_date = '{end_date}'")
+        for row in result:
+            booking_id = row.id
+    print('Room successfully booked. Your booking ID:', booking_id)
     main_menu()
 
 def room_menu():
-    pass
+    table = PrettyTable()
+    table.field_names = ['Room ID', '# of people', 'Price', 'Is paid', 'From', 'To']
+    bookings = []
+    name_prompt = inquirer.prompt([inquirer.Text(name='name', message='Please enter your name')])
+    with engine.connect() as conn:
+        customer_bookings = conn.execute(f"SELECT * FROM bookings INNER JOIN customers ON bookings.customer_id = customers.id WHERE customers.name = '{name_prompt['name']}'")
+    for row in customer_bookings:
+        bookings.append(row.room_id)
+        if row.is_paid == 1:
+            table.add_row([row.room_id, row.number_of_people, row.price, 'Yes', row.start_date, row.end_date])
+        else:
+            table.add_row([row.room_id, row.number_of_people, row.price, 'No', row.start_date, row.end_date])
+    print(table)
+
+    room_id_prompt = inquirer.prompt([inquirer.List(name='room_id', message='Select room', choices=bookings)])
+    with engine.connect() as conn:
+        booking = conn.execute(f"SELECT * FROM bookings INNER JOIN customers ON bookings.customer_id = customers.id WHERE customers.name = '{name_prompt['name']}' AND bookings.room_id = {room_id_prompt['room_id']}")
+    for row in booking:
+        start_date = row.start_date
+        end_date = row.end_date
+    delta = end_date - start_date
+    choice_prompt = inquirer.prompt([inquirer.List(name='choice', message='Select option', choices=['Change # of people', 'Change date', 'Cancel booking'])])
+    if choice_prompt['choice'] == 'Change # of people':
+        people_prompt = inquirer.prompt([inquirer.Text(name='amount', message='Enter new number of people', validate=lambda _, x: re.match('\d', x))])
+        price = int(people_prompt['amount']) * 100 * delta.days
+        confirm_prompt = inquirer.prompt([inquirer.List(name='answer', message=f'New price will be {price}. Do you wish to continue?', choices=['Yes', 'No'])])
+        if confirm_prompt['answer'] == 'Yes':
+            pay_prompt = inquirer.prompt([inquirer.List(name='answer', message='Would you like to pay now?', choices=['Yes', 'No'])])
+            if pay_prompt['answer'] == 'Yes':
+                with engine.connect() as conn:
+                    conn.execute(f"UPDATE bookings JOIN customers ON bookings.customer_id = customers.id SET bookings.number_of_people = {people_prompt['amount']}, bookings.price = {price}, bookings.is_paid = 1 WHERE customers.name = '{name_prompt['name']}' AND bookings.room_id = {room_id_prompt['room_id']}")
+                print('Successfully updated booking')
+            else:
+                with engine.connect() as conn:
+                    conn.execute(f"UPDATE bookings JOIN customers ON bookings.customer_id = customers.id SET bookings.number_of_people = {people_prompt['amount']}, bookings.price = {price}, bookings.is_paid = 0 WHERE customers.name = '{name_prompt['name']}' AND bookings.room_id = {room_id_prompt['room_id']}")
+                print('Successfully updated booking')
+        elif confirm_prompt['answer'] == 'No':
+            main_menu()
+    elif choice_prompt['choice'] == 'Change date':
+        pass
+    elif choice_prompt['choice'] == 'Cancel booking':
+        with engine.connect() as conn:
+            conn.execute(f"DELETE bookings FROM bookings INNER JOIN customers ON customers.id = bookings.customer_id WHERE customers.name = '{name_prompt['name']}' AND bookings.room_id = {room_id_prompt['room_id']}")
+        print('Successfully cancelled booking.')
+        main_menu()
 
 main_menu()
