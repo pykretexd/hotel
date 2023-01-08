@@ -1,0 +1,79 @@
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+.header-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 20px;
+  padding: 20px;
+  background-color: #f1f1f1;
+}
+
+.header {
+  width: 75%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px;
+}
+
+.header *::selection {
+  background-color: transparent;
+}
+
+.header-left a {
+  font-size: 25px;
+  font-weight: bold;
+}
+
+.header-right a {
+  color: black;
+  text-align: center;
+  text-decoration: none;
+  font-size: 18px;
+  padding: 8px;
+}
+
+.header-right a:hover {
+  background-color: #ddd;
+  color: black;
+  cursor: pointer;
+}
+
+.header-right a:active {
+  background-color: dodgerblue;
+  color: white;
+}
+
+.container {
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.container-content {
+  width: 75%;
+  display: flex;
+  flex-direction: column;
+}
+
+.sign-up-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sign-up-box {
+  width: 15%;
+}
+
+.sign-up-button {
+  width: 4rem;
+  height: 2rem;
+}
