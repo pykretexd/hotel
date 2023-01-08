@@ -1,0 +1,9 @@
+{% extends 'layout.html' %} {% block content %}
+<h2>Sign up</h2>
+<form method="POST" class="sign-up-form">
+  {{ form.hidden_tag() }} {{ form.name.label }} {{
+  form.name(class='sign-up-box') }}
+  <br />
+  {{ form.submit(class='sign-up-button') }}
+</form>
+{% endblock %}
