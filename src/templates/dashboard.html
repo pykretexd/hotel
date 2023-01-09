@@ -1,6 +1,12 @@
 {% extends 'layout.html' %} {% block content %}
 <h2>Dashboard</h2>
-<br />
+<br>
+<table class="table">
+    {% for reservation in reservations %}
+        
+    {% endfor %}
+</table>
+<br>
 <div class="card">
   <div class="card-header">Update Account</div>
   <div class="card-body">
