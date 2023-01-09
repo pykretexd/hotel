@@ -1,0 +1,14 @@
+{% extends 'layout.html' %} {% block content %}
+<h2>Confirm reservation</h2>
+<p>Price: {{ price }}</p>
+<form class="form" method="POST">
+  {{ form.hidden_tag() }}
+  <div class="form-check">
+    {{ form.pay(class='form-check-input') }} {{
+    form.pay.label(class='form-check-label') }}
+  </div>
+  <br />
+  {{ form.submit(class='btn btn-secondary') }}
+  <a class="btn btn-danger" href="{{ url_for('index') }}">Cancel</a>
+</form>
+{% endblock %}
