@@ -1,9 +1,10 @@
 {% extends 'layout.html' %} {% block content %}
 <h2>Sign up</h2>
-<form method="POST" class="sign-up-form">
-  {{ form.hidden_tag() }} {{ form.name.label }} {{
-  form.name(class='sign-up-box') }}
+<form method="POST" class="border p-3 my-3 bg-body rounded">
+  {{ form.hidden_tag() }} 
+  {{ form.name.label(class='form-label') }} 
+  {{ form.name(class='form-control') }}
   <br />
-  {{ form.submit(class='sign-up-button') }}
+  {{ form.submit(class='btn btn-secondary') }}
 </form>
 {% endblock %}
