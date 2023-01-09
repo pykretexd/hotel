@@ -1,0 +1,16 @@
+{% extends 'layout.html' %} {% block content %}
+<h2>Book room #{{ room.id }}</h2>
+<form method="POST" class="p-2 border">
+    <div>
+        {{ form.hidden_tag() }}
+        {{ form.amount_of_guests.label(class='form-label') }}
+        {{ form.amount_of_guests(class='form-control') }}
+        {{ form.start_date.label(class='form-label') }}
+        {{ form.start_date(class='form-control') }}
+        {{ form.end_date.label(class='form-label') }}
+        {{ form.end_date(class='form-control') }}
+        <br>
+        {{ form.submit(class='btn btn-secondary') }}
+    </div>
+</form>
+{% endblock %}
