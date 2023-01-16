@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h2>Update reservation details</h2>
+{% if occupied_dates %}
+    <p class="m-0">Unavailable dates:</p>
+        {% for occupied_date in occupied_dates %}
+            <p class="m-0">{{ occupied_date['start'] }} - {{ occupied_date['end'] }}</p>
+        {% endfor %}
+{% endif %}
+<br>
+<form method="POST" class="p-2 border">
+    <div>
+        {{ form.hidden_tag() }}
+        {{ form.room_id.label(class='form-label') }}
+        {{ form.room_id(class='form-control') }}
+        {{ form.amount_of_guests.label(class='form-label') }}
+        {{ form.amount_of_guests(class='form-control') }}
+        {{ form.start_date.label(class='form-label') }}
+        {{ form.start_date(class='form-control') }}
+        {{ form.end_date.label(class='form-label') }}
+        {{ form.end_date(class='form-control') }}
+        <br>
+        {{ form.submit(class='btn btn-secondary') }}
+    </div>
+</form>
+{% endblock %}
