@@ -1,10 +1,53 @@
 {% extends 'layout.html' %} {% block content %}
 <h2>Dashboard</h2>
 <br>
-<table class="table">
-    {% for reservation in reservations %}
-        
-    {% endfor %}
+<h4>Reservations</h4>
+<table class="table table-hover border">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Room</th>
+            <th scope="col">Guests</th>
+            <th scope="col">Date</th>
+            <th scope="col">Price</th>
+            <th scope="col">Options</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for reservation in reservations %}
+            {% if reservation.is_paid == 0 %}
+                <tr class="table-warning">
+                    <th scope="row">{{ reservation.id }}</th>
+                    <td>{{ reservation.room_id }}</td>
+                    <td>{{ reservation.amount_of_guests }}</td>
+                    <td>{{ reservation.start_date }} - {{ reservation.end_date }}</td>
+                    <td>{{ reservation.price }} (NOT PAID)</td>
+                    <td class="d.flex gap-3">
+                        <a href="{{ url_for('update_reservation', id=reservation.id) }}">Update</a>
+                        <a href="{{ url_for('delete_reservation', id=reservation.id) }}">Cancel</a>
+                        <a href="{{ url_for('pay', id=reservation.id) }}">Pay now</a>
+                        <a data-bs-toggle="tooltip" data-bs-placement="top" title="Reservation hasn't been paid yet. It might soon be deleted.">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="black" style="width: 16px; height: 16px;" >
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                            </svg>
+                        </a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <th scope="row">{{ reservation.id }}</th>
+                    <td>{{ reservation.room_id }}</td>
+                    <td>{{ reservation.amount_of_guests }}</td>
+                    <td>{{ reservation.start_date }} - {{ reservation.end_date }}</td>
+                    <td>{{ reservation.price }}</td>
+                    <td class="d.flex gap-3">
+                        <a href="{{ url_for('update_reservation', id=reservation.id) }}">Update</a>
+                        <a href="{{ url_for('delete_reservation', id=reservation.id)}}">Cancel</a>
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </tbody>
 </table>
 <br>
 <div class="card">
