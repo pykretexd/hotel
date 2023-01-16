@@ -1,0 +1,9 @@
+{% extends 'layout.html' %} {% block content %}
+<h2>Pay for reservation</h2>
+<form class="p-2 border" method="POST">
+  <label class="form-label">Price: {{ reservation.price }}</label>
+  <br />
+  {{ form.submit(class='btn btn-secondary btn-sm') }}
+  <a href="{{ url_for('dashboard') }}" class="btn btn-danger btn-sm">Cancel</a>
+</form>
+{% endblock %}
