@@ -66,6 +66,18 @@ login_manager.login_view = 'login'
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+def date_validator(start: str, end: str):
+    try:
+        start_date = datetime.strptime(start, '%Y-%m-%d').date()
+        end_date = datetime.strptime(end, '%Y-%m-%d').date()
+    except:
+        flash('Invalid date.')
+        return Exception('Invalid date')
+    if start_date > end_date or start_date < date.today() or end_date < date.today():
+        flash('Invalid date')
+        return Exception('Invalid date')
+    return start_date, end_date
+
 # App routes
 @app.route('/', methods=['GET', 'POST'])
 def index():
