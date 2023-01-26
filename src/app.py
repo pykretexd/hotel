@@ -18,16 +18,16 @@ app.config['SQLALCHEMY_DATABASE_URI'] = str(database_uri)
 app.config['SECRET_KEY'] = str(secret_key)
 database.init_app(app)
 
-def date_validator(start: str, end: str, error_page):
+def date_validator(start: str, end: str):
     try:
         start_date = datetime.strptime(start, '%Y-%m-%d').date()
         end_date = datetime.strptime(end, '%Y-%m-%d').date()
     except:
         flash('Invalid date.')
-        return error_page
+        return Exception('Invalid date')
     if start_date > end_date or start_date < date.today() or end_date < date.today():
         flash('Invalid date')
-        return error_page
+        return Exception('Invalid date')
     return start_date, end_date
 
 # Table classes for database
@@ -72,7 +72,10 @@ def index():
     form = AvailabilityForm()
     rooms = Room.query.all()
     if request.method == 'POST':
-        start_date, end_date = date_validator(request.form['start_date'], request.form['end_date'], render_template('index.html', form=form, rooms=rooms))
+        try:
+            start_date, end_date = date_validator(request.form['start_date'], request.form['end_date'])
+        except:
+            return render_template('index.html', form=form, rooms=rooms)
         filtered_rooms = []
         for room in rooms:
             if int(request.form['amount_of_guests']) <= room.max_guests:
@@ -158,7 +161,10 @@ def booking(id):
         if amount_of_guests > room.max_guests:
             flash('Too many guests, please select another room or try again.')
             return render_template('booking.html', form=form, room=room, occupied_dates=occupied_dates)
-        start_date, end_date = date_validator(request.form['start_date'], request.form['end_date'], render_template('booking.html', form=form, room=room, occupied_dates=occupied_dates))
+        try:
+            start_date, end_date = date_validator(request.form['start_date'], request.form['end_date'])
+        except:
+            return render_template('booking.html', form=form, room=room, occupied_dates=occupied_dates)
         for occupied_date in occupied_dates:
             if occupied_date['start'] <= start_date <= occupied_date['end'] or occupied_date['start'] <= end_date <= occupied_date['end'] or occupied_date['start'] >= start_date and end_date >= occupied_date['end']:
                 flash('Date is unavailable, enter a new date.')
@@ -194,7 +200,10 @@ def update_reservation(id):
             if room.max_guests < form.amount_of_guests.data:
                 flash('You have entered too many guests for the specified room.')
                 return render_template('update_reservation.html', id=id, form=form, occupied_dates=occupied_dates)
-            start_date, end_date = date_validator(form.start_date.data, form.end_date.data, redirect(url_for('dashboard')))
+            try:
+                start_date, end_date = date_validator(request.form['start_date'], request.form['end_date'])
+            except:
+                return redirect(url_for('dashboard'))
             for occupied_date in occupied_dates:
                 if occupied_date['start'] <= start_date <= occupied_date['end'] or occupied_date['start'] <= end_date <= occupied_date['end'] or occupied_date['start'] >= start_date and end_date >= occupied_date['end']:
                     flash('Date is unavailable, enter a new date.')
@@ -255,7 +264,10 @@ def confirm(purpose):
         user = User.query.get_or_404(request.args.get('user_id'))
         room = Room.query.get_or_404(request.args.get('room_id'))
         amount_of_guests = request.args.get('amount_of_guests')
-        start_date, end_date = date_validator(request.args.get('start_date'), request.args.get('end_date'), redirect(url_for('dashboard')))
+        try:
+            start_date, end_date = date_validator(request.form['start_date'], request.form['end_date'])
+        except:
+            return redirect(url_for('dashboard'))
         price = session.get('price', None)
         if form.pay.data:
             is_paid = 1
